@@ -1,14 +1,52 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Ionic Blank
+      <ion-icon name="restaurant"></ion-icon> Random Restaurant
     </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only clear color="dark" (click)="goToOptions()">
+        <ion-icon name="funnel"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+<ion-content>
+  <ion-spinner *ngIf="isLoading" name="ios-small"></ion-spinner>
+  <ion-card *ngIf="isErr">
+    {{message}}
+  </ion-card>
+  <div *ngIf="!isLoading && !isErr">
+    <ion-card>
+      <img class="restaurant-img" src="{{restaurant.image_url}}" />
+      <div class="card-title">{{restaurant.name}}</div>
+    </ion-card>
+    <ion-list>
+      <ion-item detail-push (click)="goToLink(directions)">
+        <ion-icon name="navigate" color="primary" item-left></ion-icon>
+        {{restaurant.location.destination}}
+      </ion-item>
+      <ion-item detail-push (click)="goToLink('tel:'+ restaurant.phone)">
+        <ion-icon name="call" color="primary" item-left></ion-icon>
+        {{restaurant.display_phone}}
+      </ion-item>
+      <ion-item>
+        <ion-icon name="time" item-left></ion-icon>
+        {{restaurant.location.duration}}
+      </ion-item>
+      <ion-item>
+        <ion-icon name="pin" item-left></ion-icon>
+        {{restaurant.location.distance}}
+      </ion-item>
+      <ion-item>
+        <ion-icon name="pricetag" item-left></ion-icon>
+        {{restaurant.price}}
+      </ion-item>
+    </ion-list>
+  </div>
 </ion-content>
+<ion-footer no-border>
+  <ion-toolbar>
+    <button ion-button full color="dark" (click)="getRestaurant()">Rand(<ion-icon name="restaurant"></ion-icon>)</button>
+  </ion-toolbar>
+</ion-footer>

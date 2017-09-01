@@ -3,20 +3,27 @@ import { Http, Headers, Response } from '@angular/http';
 
 import { Subject } from 'rxjs/subject';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/switchMap';
 @Injectable()
 export class RestaurantService{
-  private url: string = 'http://localhost:8080/api/restaurant';
+  private url: string = 'http://brownies-server.azurewebsites.net/api/restaurant';
   private restaurant$: Subject<any> = new Subject();
   constructor(
     private http: Http
   ){}
 
-  getRestaurant(query: any): Subject<any>{
+  getRestaurant(query: any){
     this.http
       .post(this.url + '/random', query)
       .map((r: Response) => r.json())
-      .subscribe(restaurant => this.restaurant$.next(restaurant));
+      .switchMap(data => data)
+      .subscribe(
+      restaurant => this.restaurant$.next(restaurant),
+      err => this.restaurant$.next(err)
+    );
+  }
 
+  get restaurant(): Subject<any>{
     return this.restaurant$;
   }
 }

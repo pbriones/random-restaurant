@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Options</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-icon name="pricetag" item-left></ion-icon>
+      <ion-label>Price</ion-label>
+      <ion-select [(ngModel)]="options.prices" (ngModelChange)="onChange()" multiple="true" cancelText="Nah" okText="Okay!">
+        <ion-option value="1" selected="true">Cheap!</ion-option>
+        <ion-option value="2" selected="true">Meh.</ion-option>
+        <ion-option value="3">Pricey...</ion-option>
+        <ion-option value="4">WTF?!</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-range [(ngModel)]="options.radius" (ngModelChange)="onChange()" min=1 max=24 pin=true>
+        <ion-label range-left>{{options.radius}} mi.</ion-label>
+        <ion-icon range-left small name="disc"></ion-icon>
+        <ion-icon range-right name="disc"></ion-icon>
+      </ion-range>
+    </ion-item>
+    <ion-item>
+      <ion-label>Categories</ion-label>
+      <ion-select [(ngModel)]="options.categories" (ngModelChange)="onChange()" multiple="true" cancelText="Nah" okText="Okay!">
+        <ion-option value="tradamerican">American</ion-option>
+        <ion-option value="mexican">Mexican</ion-option>
+        <ion-option value="asianfusion">Asian</ion-option>
+        <ion-option value="chinese">Chinese</ion-option>
+        <ion-option value="thai">Thai</ion-option>
+        <ion-option value="korean">Korean</ion-option>
+        <ion-option value="vietnamese">Vietnamese</ion-option>
+        <ion-option value="italian">Italian</ion-option>
+        <ion-option value="indpak">Indian</ion-option>
+        <ion-option value="mediterranean">Mediterranean</ion-option>
+        <ion-option value="latin">Latin American</ion-option>
+        <ion-option value="seafood">Seafood</ion-option>
+        <ion-option value="steak">Steak</ion-option>
+        <ion-option value="sushi">sushi</ion-option>
+        <ion-option value="bbq">Barbeque</ion-option>
+        <ion-option value="breakfast_brunch">Brunch</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+</ion-content>`
