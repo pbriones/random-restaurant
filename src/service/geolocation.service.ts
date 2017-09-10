@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
-import { Geolocation } from 'ionic-native';
+import { Geolocation } from '@ionic-native/geolocation';
 import { BehaviorSubject } from 'rxjs/behaviorSubject';
 
 @Injectable()
@@ -15,10 +15,13 @@ export class GeolocationService {
     speed: 0,
     init: true
   });
-  constructor(private platform: Platform) {};
+  constructor(
+    private platform: Platform,
+    private geolocationService: Geolocation
+  ) { };
   getCurrentPosition(): BehaviorSubject<Coordinates> {
     if (this.platform.is('android')) {
-      Geolocation.getCurrentPosition()
+      this.geolocationService.getCurrentPosition()
         .then(pos => this.geolocation$.next(pos.coords));
     } else {
       navigator.geolocation.getCurrentPosition(

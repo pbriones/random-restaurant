@@ -5,6 +5,7 @@ import { OptionsService } from '../../service/options.service';
 import { RestaurantService } from '../../service/restaurant.service';
 import { GeolocationService } from '../../service/geolocation.service';
 import 'rxjs/add/operator/distinctUntilChanged';
+import { PayloadService } from "../../service/payload.service";
 
 @Component({
   selector: 'page-home',
@@ -24,24 +25,24 @@ export class HomePage implements OnInit {
     private popoverCtrl: PopoverController,
     private restaurantService: RestaurantService,
     private optionsService: OptionsService,
-    private geolocationService: GeolocationService
+    private geolocationService: GeolocationService,
+    private payloadService: PayloadService
   ) { }
 
   ngOnInit(): void {
-    this.restaurantService.restaurant
-      .subscribe(restaurant => {
-        this.isLoading = false;
-        this.isErr = false;
-        if (restaurant.ok === false) {
-          this.isErr = true;
-        } else {
-          let destination = `&daddr=${restaurant.location.destination}`;
-          let origin = `?saddr=${restaurant.location.origin}`;
-          this.restaurant = restaurant;
-          this.directions = `${this.mapsUrl}${origin}${destination}`;
-          console.log(restaurant);
-        }
-      })
+    // this.restaurantService.restaurant
+    //   .subscribe(restaurant => {
+    //     this.isLoading = false;
+    //     this.isErr = false;
+    //     if (restaurant.ok === false) {
+    //       this.isErr = true;
+    //     } else {
+    //       let destination = `&daddr=${restaurant.location.destination}`;
+    //       let origin = `?saddr=${restaurant.location.origin}`;
+    //       this.restaurant = restaurant;
+    //       this.directions = `${this.mapsUrl}${origin}${destination}`;
+    //     }
+    //   })
     this.geolocationService.getCurrentPosition()
       .subscribe(coords => {
         this.coordinates = coords;
@@ -50,6 +51,8 @@ export class HomePage implements OnInit {
             this.getRestaurant();
           });
       });
+    
+    this.payloadService.payload.subscribe(console.log)
   }
 
   goToOptions(): void {
@@ -73,7 +76,6 @@ export class HomePage implements OnInit {
         this.optionsService.options
       );
       this.isLoading = true;
-      console.log(query);
       this.restaurantService.getRestaurant(query)
     }
   }

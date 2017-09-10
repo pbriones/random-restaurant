@@ -1,4 +1,5 @@
 import { NgModule, ErrorHandler } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import {HttpModule } from '@angular/http';
 
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
@@ -8,6 +9,10 @@ import { OptionsPage } from '../pages/options/options';
 
 import { OptionsService } from '../service/options.service';
 import { GeolocationService } from '../service/geolocation.service';
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { Geolocation } from '@ionic-native/geolocation';
+import { PayloadService } from '../service/payload.service';
 
 @NgModule({
   declarations: [
@@ -17,6 +22,7 @@ import { GeolocationService } from '../service/geolocation.service';
   ],
   imports: [
     IonicModule.forRoot(MyApp),
+    BrowserModule,
     HttpModule
   ],
   bootstrap: [IonicApp],
@@ -28,7 +34,11 @@ import { GeolocationService } from '../service/geolocation.service';
   providers: [
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     OptionsService,
-    GeolocationService
+    GeolocationService,
+    StatusBar,
+    SplashScreen,
+    Geolocation,
+    PayloadService
   ]
 })
 export class AppModule {}

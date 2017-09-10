@@ -5,27 +5,39 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
+  <ion-list [formGroup]="optionsForm">
     <ion-item>
       <ion-icon name="pricetag" item-left></ion-icon>
       <ion-label>Price</ion-label>
-      <ion-select [(ngModel)]="options.prices" (ngModelChange)="onChange()" multiple="true" cancelText="Nah" okText="Okay!">
-        <ion-option value="1" selected="true">Cheap!</ion-option>
-        <ion-option value="2" selected="true">Meh.</ion-option>
+      <ion-select formControlName="prices"
+       multiple="true"
+        cancelText="Nah"
+         okText="Okay!">
+        <ion-option value="1" selected="true">
+          Cheap!
+        </ion-option>
+        <ion-option value="2" selected="true">
+          Meh.
+        </ion-option>
         <ion-option value="3">Pricey...</ion-option>
         <ion-option value="4">WTF?!</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>
-      <ion-range [(ngModel)]="options.radius" (ngModelChange)="onChange()" min=1 max=24 pin=true>
-        <ion-label range-left>{{options.radius}} mi.</ion-label>
+      <ion-range formControlName="radius"
+       min=1
+       max=24
+       pin=true>
+        <ion-label range-left>
+          {{optionsForm.get('radius').value}} mi.
+        </ion-label>
         <ion-icon range-left small name="disc"></ion-icon>
         <ion-icon range-right name="disc"></ion-icon>
       </ion-range>
     </ion-item>
     <ion-item>
       <ion-label>Categories</ion-label>
-      <ion-select [(ngModel)]="options.categories" (ngModelChange)="onChange()" multiple="true" cancelText="Nah" okText="Okay!">
+      <ion-select formControlName='categories' multiple="true" cancelText="Nah" okText="Okay!">
         <ion-option value="tradamerican">American</ion-option>
         <ion-option value="mexican">Mexican</ion-option>
         <ion-option value="asianfusion">Asian</ion-option>

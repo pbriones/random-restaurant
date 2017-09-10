@@ -3,46 +3,48 @@ import { NavController } from 'ionic-angular';
 import { OptionsService } from '../../service/options.service';
 import { Payload } from '../../entity/payload';
 import { Options } from '../../entity/options';
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { Subject } from "rxjs/Subject";
+import { PayloadService } from "../../service/payload.service";
 
 @Component({
   selector: 'page-options',
   templateUrl: 'options.html',
 })
 export class OptionsPage implements OnInit {
-  options: Options;
+  optionsForm: FormGroup;
+  payload$ = new Subject<Payload>();
   constructor(
     public navCtrl: NavController,
     private optionsService: OptionsService,
+    private payloadService: PayloadService,
+    private formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
-    this.options = this.createOptions(this.optionsService.options);
+    this.optionsForm = this.createOptionsForm();
+    this.payloadService.payload = this.optionsForm
+      .valueChanges
+      .map(options => this.createPayload(options));  
   }
 
-  onChange() {
-    let payload = this.createPayload(this.options);
-    this.optionsService.options = payload;
-  }
-  private createOptions(payload: Payload): Options {
-    let options: Options = {
-      prices: payload.price.split(','),
-      radius: Math.abs(payload.radius / 1609.344),
-      categories: payload.categories? payload.categories.split(',') : []
+  private createPayload(options: any): Payload{
+    return {
+      radius: options.radius * 1609.344,
+      price: this.arrayToCSV(options.prices),
+      categories: this.arrayToCSV(options.categories)
     }
-    return options;
   }
-  private createPayload(options) {
-    let payload: any = {};
-    if (options.prices.length === 0) {
-      payload.price = '1,2,3,4';
-    } else {
-      payload.price = options.prices.join(',');
-    }
 
-    payload.radius = options.radius * 1609.344;
-    if (options.categories.length > 0) {
-      payload.categories = options.categories.join(',');
-    }
-    return payload;
+  private arrayToCSV(array: any[]): string {
+    return array.join(',');
+  }
+
+  private createOptionsForm(): FormGroup {
+    return this.formBuilder.group({
+      prices: [['1', '2']],
+      radius: 5,
+      categories: [[]]
+    })
   }
 }

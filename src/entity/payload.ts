@@ -1,5 +1,5 @@
 export class Payload {
-  price: string;
+  price?: string;
   radius: number;
   categories?: string;
 }
