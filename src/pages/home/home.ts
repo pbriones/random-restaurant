@@ -5,7 +5,18 @@ import { OptionsService } from '../../service/options.service';
 import { RestaurantService } from '../../service/restaurant.service';
 import { GeolocationService } from '../../service/geolocation.service';
 import 'rxjs/add/operator/distinctUntilChanged';
+import 'rxjs/add/operator/startWith';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/finally';
 import { PayloadService } from "../../service/payload.service";
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { Restaurant } from '../../entity/restaurant';
+import { Payload } from '../../entity/payload';
+import { Coords } from '../../entity/coords';
 
 @Component({
   selector: 'page-home',
@@ -13,12 +24,13 @@ import { PayloadService } from "../../service/payload.service";
   providers: [RestaurantService]
 })
 export class HomePage implements OnInit {
-  private restaurant: any;
-  private isLoading: boolean = true;
-  private isErr: boolean = false;
-  private message: string = 'Nothing found. May want to change the filters!';
+  restaurant: Restaurant;
+  isLoading: boolean = true;
+  isErr: boolean = false;
+  message: string = 'Nothing found. May want to change the filters!';
+  directions: string;
+  private newRestaurant$ = new Subject<boolean>();
   private coordinates: Coordinates;
-  private directions: string;
   private mapsUrl: string = 'https://maps.apple.com/maps';
   constructor(
     public navCtrl: NavController,
@@ -30,54 +42,64 @@ export class HomePage implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // this.restaurantService.restaurant
-    //   .subscribe(restaurant => {
-    //     this.isLoading = false;
-    //     this.isErr = false;
-    //     if (restaurant.ok === false) {
-    //       this.isErr = true;
-    //     } else {
-    //       let destination = `&daddr=${restaurant.location.destination}`;
-    //       let origin = `?saddr=${restaurant.location.origin}`;
-    //       this.restaurant = restaurant;
-    //       this.directions = `${this.mapsUrl}${origin}${destination}`;
-    //     }
-    //   })
-    this.geolocationService.getCurrentPosition()
-      .subscribe(coords => {
-        this.coordinates = coords;
-        this.optionsService.getOptions()
-          .subscribe(() => {
-            this.getRestaurant();
-          });
-      });
-    
+    this.geolocationService
+      .getCurrentPosition()
+      .map(position => this.getLatLong(position))
+      .filter(coords => coords.latitude !== 0 &&
+        coords.longitude !== 0)
+      .switchMap(coords => this.getPayload(coords))
+      .switchMap(payload => this.newRestaurant(payload))
+      .do(() => this.isLoading = true)
+      .switchMap(payload => this.restaurantService
+        .getRestaurant(payload))
+      .do(() => this.isLoading = false)
+      .subscribe(restaurant => this.handleRestaurant(restaurant),
+      () => this.isErr = true);
+
     this.payloadService.payload.subscribe(console.log)
   }
 
   goToOptions(): void {
     this.navCtrl.push(OptionsPage);
   }
-  goToLink(link: string): void {
-    location.href = link;
+  goToMap(restaurant: any): void {
+    let destination = `&daddr=${restaurant.location.destination}`;
+    let origin = `?saddr=${restaurant.location.origin}`;
+    location.href = `${this.mapsUrl}${origin}${destination}`;;
+  }
+  call(phone: string): void {
+    location.href = `tel:${phone}`;
   }
 
   getRestaurant(): void {
-    let coordinates = this.coordinates;
-    if (coordinates.latitude !== 0 &&
-      coordinates.longitude !== 0) {
-      let geolocation = {
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude
-      };
-      let query = Object.assign(
-        {},
-        geolocation,
-        this.optionsService.options
-      );
-      this.isLoading = true;
-      this.restaurantService.getRestaurant(query)
+    this.newRestaurant$.next(true);
+  }
+  private getLatLong(position: Coordinates): Coords {
+    return {
+      latitude: position.latitude,
+      longitude: position.longitude
     }
   }
 
+  private handleRestaurant(restaurant: any): void {
+    if (!restaurant) {
+      this.isErr = true;
+      return;
+    };
+    this.isErr = false;
+    this.restaurant = restaurant;
+  }
+
+  private getPayload(coords: Coords): Observable<Payload> {
+    return this.payloadService.payload
+      .startWith({ price: '1,2', radius: 5 * 1609.344 })
+      .map(payload => Object.assign({}, payload, coords));
+  }
+
+  private newRestaurant(payload: Payload): Observable<Payload> {
+    return this.newRestaurant$
+      .asObservable()
+      .startWith(true)
+      .map(() => payload);
+  }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
 import { BehaviorSubject } from 'rxjs/behaviorSubject';
-
+import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class GeolocationService {
   private geolocation$: BehaviorSubject<Coordinates> = new BehaviorSubject({
@@ -19,7 +19,7 @@ export class GeolocationService {
     private platform: Platform,
     private geolocationService: Geolocation
   ) { };
-  getCurrentPosition(): BehaviorSubject<Coordinates> {
+  getCurrentPosition(): Observable<Coordinates> {
     if (this.platform.is('android')) {
       this.geolocationService.getCurrentPosition()
         .then(pos => this.geolocation$.next(pos.coords));
@@ -30,7 +30,7 @@ export class GeolocationService {
       );
     }
 
-    return this.geolocation$;
+    return this.geolocation$.asObservable();
   }
   
   get geolocation() {

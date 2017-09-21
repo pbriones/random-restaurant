@@ -3,9 +3,10 @@ import { NavController } from 'ionic-angular';
 import { OptionsService } from '../../service/options.service';
 import { Payload } from '../../entity/payload';
 import { Options } from '../../entity/options';
-import { FormBuilder, FormGroup } from "@angular/forms";
-import { Subject } from "rxjs/Subject";
-import { PayloadService } from "../../service/payload.service";
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/debounceTime';
+import { PayloadService } from '../../service/payload.service';
 
 @Component({
   selector: 'page-options',
@@ -23,8 +24,12 @@ export class OptionsPage implements OnInit {
 
   ngOnInit(): void {
     this.optionsForm = this.createOptionsForm();
+    this.optionsForm
+      .setValue(this.optionsService.formValue);
     this.payloadService.payload = this.optionsForm
       .valueChanges
+      .debounceTime(300)
+      .do(value => this.optionsService.formValue = value)
       .map(options => this.createPayload(options));  
   }
 
@@ -42,8 +47,8 @@ export class OptionsPage implements OnInit {
 
   private createOptionsForm(): FormGroup {
     return this.formBuilder.group({
-      prices: [['1', '2']],
-      radius: 5,
+      prices: [[]],
+      radius: 1,
       categories: [[]]
     })
   }

@@ -22,11 +22,11 @@
       <div class="card-title">{{restaurant.name}}</div>
     </ion-card>
     <ion-list>
-      <ion-item detail-push (click)="goToLink(directions)">
+      <ion-item detail-push (click)="goToLink(restaurant)">
         <ion-icon name="navigate" color="primary" item-left></ion-icon>
         {{restaurant.location.destination}}
       </ion-item>
-      <ion-item detail-push (click)="goToLink('tel:'+ restaurant.phone)">
+      <ion-item detail-push (click)="call(restaurant.phone)">
         <ion-icon name="call" color="primary" item-left></ion-icon>
         {{restaurant.display_phone}}
       </ion-item>

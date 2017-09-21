@@ -4,28 +4,22 @@ import { Http, Headers, Response } from '@angular/http';
 import { Subject } from 'rxjs/subject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/retry';
 import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/throw';
 import { Observable } from "rxjs/Observable";
+import { Restaurant } from '../entity/restaurant';
 @Injectable()
-export class RestaurantService{
-  private url: string = 'http://brownies-server.azurewebsites.net/api/restaurant';
-  private restaurant$: Subject<any> = new Subject();
+export class RestaurantService {
+  private url = 'http://brownies-server.azurewebsites.net/api/restaurant';
   constructor(
     private http: Http
-  ){}
+  ) { }
 
-  getRestaurant(query: any){
-    this.http
+  getRestaurant(query: any): Observable<Restaurant> {
+    return this.http 
       .post(this.url + '/random', query)
       .map((r: Response) => r.json())
-      .switchMap(data => Observable.of(data))
-      .subscribe(
-      restaurant => this.restaurant$.next(restaurant),
-      err => this.restaurant$.next(err)
-    );
-  }
-
-  get restaurant(): Subject<any>{
-    return this.restaurant$;
+      .catch(() => Observable.of(null))
   }
 }
