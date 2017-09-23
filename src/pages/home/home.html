@@ -19,10 +19,12 @@
   <div *ngIf="!isLoading && !isErr">
     <ion-card>
       <img class="restaurant-img" src="{{restaurant.image_url}}" />
-      <div class="card-title">{{restaurant.name}}</div>
+      <a href="{{restaurant?.url}}" class="card-title">
+       {{restaurant.name}}
+      </a>
     </ion-card>
     <ion-list>
-      <ion-item detail-push (click)="goToLink(restaurant)">
+      <ion-item detail-push (click)="goToMap(restaurant)">
         <ion-icon name="navigate" color="primary" item-left></ion-icon>
         {{restaurant.location.destination}}
       </ion-item>
@@ -47,6 +49,8 @@
 </ion-content>
 <ion-footer no-border>
   <ion-toolbar>
-    <button ion-button full color="dark" (click)="getRestaurant()">Rand(<ion-icon name="restaurant"></ion-icon>)</button>
+    <button ion-button full color="dark" [disabled]="isLoading" (click)="getRestaurant()">
+      Rand(<ion-icon name="restaurant"></ion-icon>)
+    </button>
   </ion-toolbar>
 </ion-footer>

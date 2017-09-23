@@ -55,8 +55,6 @@ export class HomePage implements OnInit {
       .do(() => this.isLoading = false)
       .subscribe(restaurant => this.handleRestaurant(restaurant),
       () => this.isErr = true);
-
-    this.payloadService.payload.subscribe(console.log)
   }
 
   goToOptions(): void {
